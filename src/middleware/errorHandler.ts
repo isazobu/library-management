@@ -1,18 +1,39 @@
-import { NextFunction, Request, Response } from "express";
+import express from 'express';
+import HttpStatus from 'http-status-codes';
 
- 
- export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
-  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-  res.status(statusCode);
-  res.json({
-    message: err.message,
-    stack: process.env.NODE_ENV === 'production' ? null : err.stack,
+export interface IError {
+  status?: number;
+  code?: number;
+  message?: string;
+}
+
+export function notFoundErrorHandler(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) {
+  res.status(HttpStatus.NOT_FOUND).json({
+    success: false,
+    error: {
+      code: HttpStatus.NOT_FOUND,
+      message: HttpStatus.getStatusText(HttpStatus.NOT_FOUND),
+    },
   });
-};
-  
-export const notFound = (req: Request, res: Response, next: NextFunction) => {
-    const error = new Error(`Not Found - ${req.originalUrl}`);
-    res.status(404);
-    next(error);
-  };
-  
+}
+
+export function errorHandler(
+  err: IError,
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) {
+  res.status(err.status || HttpStatus.INTERNAL_SERVER_ERROR).json({
+    success: false,
+    error: {
+      code: err.code || HttpStatus.INTERNAL_SERVER_ERROR,
+      message:
+        err.message ||
+        HttpStatus.getStatusText(HttpStatus.INTERNAL_SERVER_ERROR),
+    },
+  });
+}
