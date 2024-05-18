@@ -23,3 +23,4 @@ class UserService implements UserServiceInterface {
     }
 }
 
+export default UserService;

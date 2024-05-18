@@ -14,3 +14,5 @@ class UserRepository implements UserRepositoryInterface {
         return await User.create(user);
     }
 }
+
+export default UserRepository;
