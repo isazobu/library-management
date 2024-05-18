@@ -1,6 +1,7 @@
 import Book, { BookCreationAttributes, BookGetAllAttributes} from '../model/Book';
 import BookRepositoryInterface from './BookRepositoryInterface';
-
+import NotFoundError from '../../errors/NotFoundError';
+import BadRequestError from '../../errors/BadRequestError'
 class BookRepository implements BookRepositoryInterface {
   async createBook(bookData: BookCreationAttributes): Promise<Book> {
     console.log('BookRepository.createBook');
@@ -25,18 +26,21 @@ class BookRepository implements BookRepositoryInterface {
    * @returns A Promise that resolves to the borrowed book if it exists and is not already borrowed, or `null` otherwise.
    */
   async borrowBook(id: number): Promise<Book | null> {
-    console.log('BookRepository.borrowBook');
+
     const book = await Book.findByPk(id);
     console.log('book:', book);
-    if (book && !book.isBorrowed) {
-      book.isBorrowed = true;
-      await book.save();
+    if (!book) {
+      throw new NotFoundError('Book not found');
+    } 
+    if (book.isBorrowed) {
+      throw new BadRequestError('Book is already borrowed');
     }
     return book;
   }
 
   async returnBook(id: number, rating: number): Promise<Book | null> {
     const book = await Book.findByPk(id);
+
     if (book) {
       book.isBorrowed = false;
       book.score = rating;

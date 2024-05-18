@@ -27,6 +27,7 @@ class BookService implements BookServiceInterface {
   }
 
   async returnBook(id: number, rating: number): Promise<Book | null> {
+    this.bookRepository.returnBook(id, rating);
     return this.bookRepository.returnBook(id, rating);
   }
 }

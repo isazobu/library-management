@@ -27,5 +27,8 @@ userRouter.route('/')
   userRouter.route('/:userId/borrow/:bookId')
   .post((req, res) => borrowController.borrowBook(req, res));
 
+  userRouter.route('/:userId/return/:bookId')
+  .post((req, res) => borrowController.returnBook(req, res));
+
 
 export default userRouter;
