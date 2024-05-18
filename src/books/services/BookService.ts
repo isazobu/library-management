@@ -1,4 +1,4 @@
-import Book,{  BookCreationAttributes } from "../model/Book";
+import Book,{  BookCreationAttributes, BookGetAllAttributes } from "../model/Book";
 import BookRepositoryInterface from "../repository/BookRepositoryInterface";
 import BookServiceInterface from "./BookServiceInterface";
 
@@ -14,7 +14,7 @@ class BookService implements BookServiceInterface {
     return this.bookRepository.createBook(bookData);
   }
 
-  async getAllBooks(): Promise<Book[]> {
+  async getAllBooks(): Promise<BookGetAllAttributes[]> {
     return this.bookRepository.getAllBooks();
   }
 

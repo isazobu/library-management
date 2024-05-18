@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { BookCreationAttributes } from "../model/Book";
+import { BookCreationAttributes, BookGetAllAttributes } from "../model/Book";
 import BookServiceInterface from "../services/BookServiceInterface";
 
 
@@ -15,8 +15,8 @@ class BookController {
     async createBook(req: Request, res: Response): Promise<void> {
       try {
         const bookData: BookCreationAttributes = req.body;
-        const newBook = await this.bookService.createBook(bookData);
-        res.status(201).json(newBook);
+        await this.bookService.createBook(bookData);
+        res.status(201).json();
       } catch (error) {
         console.error('Error in BookController.createBook:', error);
         res.status(500).json({ error: 'Failed to create book' });

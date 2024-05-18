@@ -8,7 +8,7 @@ const bookRouter = express.Router();
 
 
 const bookRepository = new BookRepository();
-const bookService = new BookService(bookRepository);
+export const bookService = new BookService(bookRepository);
 const bookController = new BookController(bookService);
 
 bookRouter.route('/')

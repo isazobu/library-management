@@ -11,6 +11,11 @@ export interface BookAttributes {
 
 }
 
+
+
+
+export interface BookGetAllAttributes extends Omit<BookAttributes, 'isBorrowed'> {}
+
 export interface BookCreationAttributes extends Omit<BookAttributes, 'id' | 'averageRating' | 'isBorrowed'> {}
 
 class Book extends Model<BookAttributes, BookCreationAttributes> implements BookAttributes {

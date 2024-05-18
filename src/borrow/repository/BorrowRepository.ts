@@ -3,13 +3,15 @@ import BorrowRepositoryInterface from './BorrowRepositoryInterface';
 
 class BorrowRepository implements BorrowRepositoryInterface {
 
-    async borrowBook(id: number): Promise<Borrow | null> {
-        const borrow = await Borrow.findByPk(id);
-        if (borrow) {
-            // borrow.isBorrowed = true;
-            await borrow.save();
-        }
+    async borrowBook(userId: number, bookId: number): Promise<Borrow | null> {
+        const borrow =
+         await Borrow.create({
+             UserId: userId, 
+             BookId: bookId,
+             borrowDate: new Date(),
+             });
         return borrow;
+        
     }
 
     async returnBook(id: number): Promise<Borrow | null> {
