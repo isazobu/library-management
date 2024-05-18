@@ -1,5 +1,5 @@
 
-import {Book, BookCreationAttributes} from '../model/Book';
+import Book, { BookCreationAttributes} from '../model/Book';
 
 export default interface BookServiceInterface {
   createBook(bookData: BookCreationAttributes): Promise<Book>;
