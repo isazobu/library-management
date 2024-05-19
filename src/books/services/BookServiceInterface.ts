@@ -1,4 +1,5 @@
 
+import { Transaction } from 'sequelize';
 import Book, { BookCreationAttributes, BookGetAllAttributes} from '../model/Book';
 
 export default interface BookServiceInterface {
@@ -6,5 +7,5 @@ export default interface BookServiceInterface {
   getAllBooks(): Promise<BookGetAllAttributes[]>;
   getBookById(id: number): Promise<Book | null>;
   borrowBook(id: number): Promise<Book | null>;
-  returnBook(id: number, rating: number): Promise<Book | null>;
+  returnBook(id: number, rating: number, transaction?: Transaction ): Promise<Book | null>;
 }

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { BookCreationAttributes, BookGetAllAttributes } from "../model/Book";
 import BookServiceInterface from "../services/BookServiceInterface";
+import CustomError from "../../errors/CustomError";
 
 
 
@@ -38,9 +39,13 @@ class BookController {
         const book = await this.bookService.getBookById(parseInt(req.params.id));
         res.json(book);
       } catch (error) {
-        console.error('Error in BookController.getBookById:', error);
-        res.status(500).json({ error: 'Failed to fetch book' });
-      }
+        console.error('Error in BorrowController.borrowBook:', error);
+        if (error instanceof CustomError) {
+            res.status(error.statusCode).json({ error: error.message });
+        } else {
+            res.status(500).json({ error: 'Failed to borrow book' });
+    }
+}
     }
   
     async borrowBook(req: Request, res: Response): Promise<void> {

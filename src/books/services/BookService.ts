@@ -1,3 +1,4 @@
+import { Transaction } from "sequelize";
 import BadRequestError from "../../errors/BadRequestError";
 import NotFoundError from "../../errors/NotFoundError";
 import Book,{  BookCreationAttributes, BookGetAllAttributes } from "../model/Book";
@@ -42,9 +43,8 @@ class BookService implements BookServiceInterface {
     
   }
 
-  async returnBook(id: number, rating: number): Promise<Book | null> {
-    this.bookRepository.returnBook(id, rating);
-    return this.bookRepository.returnBook(id, rating);
+  async returnBook(id: number, rating: number, transaction?: Transaction): Promise<Book | null> {
+    return this.bookRepository.returnBook(id, rating, transaction);
   }
 }
 
