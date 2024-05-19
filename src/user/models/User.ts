@@ -16,9 +16,24 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
     declare id: CreationOptional<number>;
     declare name: string;
     public readonly borrows?: Borrow[];
-    
 
 }
+
+export type GetUserDetail  = {
+    id: number;
+    name: string;
+    books: {
+        past: {
+            name: string;
+            score: number;
+        }[];
+        present: {
+            name: string;
+        }[];
+    };
+
+}
+
 
 User.init({
     id: {

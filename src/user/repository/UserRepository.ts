@@ -20,12 +20,7 @@ class UserRepository implements UserRepositoryInterface {
 
     async getByIdWithPastBorrows(userId: number) {
       
-        let cacheKey = this.generateCacheKey(userId);
-        let cacheValue = await redisClient.get(cacheKey);
-        if(cacheValue){
-            console.log('Cache hit');
-            return JSON.parse(cacheValue);
-        }
+      
         const user = await User.findByPk(userId, {
           include: [{
             model: Borrow,
@@ -39,33 +34,8 @@ class UserRepository implements UserRepositoryInterface {
           }]
         });
       
-        if (!user) return null;
-      
-        console.log('user', user);
-        console.log('user.borrows', user.borrows);
-
-        const pastBorrows = user.borrows?.filter(borrow => borrow.returnDate);
-        const presentBorrows = user.borrows?.filter(borrow => !borrow.returnDate);
-      
-        
-        const response = {
-          id: user.id,
-          name: user.name,
-          books: {
-            past: pastBorrows?.map(borrow => ({
-              name: borrow.book?.name,
-              score: borrow.score
-            })),
-            present: presentBorrows?.map(borrow => ({
-              name: borrow.book?.name
-            }))
-            
-          
-          }
-        }
-        redisClient.set(cacheKey, JSON.stringify(response));
-
-        return response;
+    
+        return user;
         
       }
       

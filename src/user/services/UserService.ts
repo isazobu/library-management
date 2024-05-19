@@ -1,8 +1,9 @@
 import NotFoundError from "../../errors/NotFoundError";
-import User, { UserCreationAttributes } from "../models/User";
+import User, { GetUserDetail, UserCreationAttributes } from "../models/User";
 import UserRepositoryInterface from "../repository/UserRepositoryInterface";
 import UserServiceInterface from "./UserServiceInsterface";
 import redisClient from '../../config/redis';
+import Borrow from "../../borrow/model/Borrow";
 
 class UserService implements UserServiceInterface {
     
@@ -23,26 +24,42 @@ class UserService implements UserServiceInterface {
         return await this.repository.create(user);
     }
 
-    async getUserById(id: number): Promise<User | null> {
-        //  check if user is in cache
-        // const cacheKey = this.generateCacheKey(id);
-        // const cacheValue = await redisClient.get(cacheKey);
-        // if(cacheValue){
-        //     console.log('Cache hit');
-        //     return JSON.parse(cacheValue);
-        // }
-        // //  if not in cache, get from db
-        // const user = await this.repository.getById(id);
-        // if (!user) {
-        //     throw new NotFoundError(`User with id ${id} not found`);
-        // }
-        //  set cache
-        // await redisClient.set(cacheKey, JSON.stringify(user));
+    async getUserById(id: number): Promise<GetUserDetail | null> {
+        let cacheKey = this.generateCacheKey(id);
+        let cacheValue = await redisClient.get(cacheKey);
+        if(cacheValue){
+            console.log('Cache hit');
+            return JSON.parse(cacheValue);
+        }
 
-
-        const a = await this.repository.getByIdWithPastBorrows(id);
+        const user = await this.repository.getByIdWithPastBorrows(id);
         
-        return a;
+        if (!user) {
+            throw new NotFoundError('User not found');
+        }
+      
+
+        const pastBorrows = user.borrows?.filter((borrow: Borrow) => borrow.returnDate);
+        const presentBorrows = user.borrows?.filter((borrow: Borrow) => !borrow.returnDate);
+      
+        
+        const response: GetUserDetail = {
+          id: user.id,
+          name: user.name,
+          books: {
+            past: pastBorrows?.map((borrow: Borrow) => ({
+              name: borrow.book?.name,
+              score: borrow.score
+            })),
+            present: presentBorrows?.map((borrow: Borrow) => ({
+              name: borrow.book?.name
+            }))
+            
+          
+          }
+        }
+
+        return response;
 
     }
 
