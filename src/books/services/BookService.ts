@@ -1,3 +1,5 @@
+import BadRequestError from "../../errors/BadRequestError";
+import NotFoundError from "../../errors/NotFoundError";
 import Book,{  BookCreationAttributes, BookGetAllAttributes } from "../model/Book";
 import BookRepositoryInterface from "../repository/BookRepositoryInterface";
 import BookServiceInterface from "./BookServiceInterface";
@@ -23,7 +25,21 @@ class BookService implements BookServiceInterface {
   }
 
   async borrowBook(id: number): Promise<Book | null> {
-    return this.bookRepository.borrowBook(id);
+
+    const book = await this.bookRepository.findById(id);
+    
+    if (!book) {
+      throw new NotFoundError('Book not found');
+    } 
+    if (book.isBorrowed) {
+      throw new BadRequestError('Book is already borrowed');
+    }
+
+    book.isBorrowed = true;
+    await this.bookRepository.save(book);
+
+    return book;
+    
   }
 
   async returnBook(id: number, rating: number): Promise<Book | null> {

@@ -14,7 +14,6 @@ class BorrowController {
         try {
             const userId = parseInt(req.params.userId);
             const bookId = parseInt(req.params.bookId);
-
             await this.borrowService.borrowBook(userId, bookId);
             res.status(201).json({ message: 'Book borrowed successfully' });
         } catch (error) {
@@ -36,7 +35,11 @@ class BorrowController {
             res.json({ message: 'Book returned successfully' });
         } catch (error) {
             console.error('Error in BorrowController.returnBook:', error);
-            res.status(500).json({ error: 'Failed to return book' });
+            if (error instanceof CustomError) {
+                res.status(error.statusCode).json({ error: error.message });
+            } else {
+                res.status(500).json({ error: 'Failed to return book' });
+            }
         }
     }
 
