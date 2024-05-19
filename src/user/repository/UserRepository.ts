@@ -1,4 +1,4 @@
-import User, { UserAttributes, UserCreationAttributes } from "../models/User";
+import User, { GetUserDetail, UserAttributes, UserCreationAttributes } from "../models/User";
 import UserRepositoryInterface from "./UserRepositoryInterface";
 import Borrow from "../../borrow/model/Borrow";
 import Book from "../../books/model/Book";
@@ -18,7 +18,7 @@ class UserRepository implements UserRepositoryInterface {
         return await User.findByPk(id);
     }
 
-    async getByIdWithPastBorrows(userId: number) {
+    async getByIdWithPastBorrows(userId: number): Promise<User | null> {
       
       
         const user = await User.findByPk(userId, {

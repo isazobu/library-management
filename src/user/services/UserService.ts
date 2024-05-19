@@ -44,19 +44,19 @@ class UserService implements UserServiceInterface {
       
         
         const response: GetUserDetail = {
-          id: user.id,
-          name: user.name,
-          books: {
-            past: pastBorrows?.map((borrow: Borrow) => ({
-              name: borrow.book?.name,
-              score: borrow.score
-            })),
-            present: presentBorrows?.map((borrow: Borrow) => ({
-              name: borrow.book?.name
-            }))
+            id: user.id,
+            name: user.name,
+            books: {
+                past: pastBorrows?.map((borrow: Borrow) => ({
+                    name: borrow.book?.name || '',
+                    score: borrow.score || 0
+                })) ?? [],
+                present: presentBorrows?.map((borrow: Borrow) => ({
+                    name: borrow.book?.name || ''
+                })) ?? []
+                
             
-          
-          }
+            }
         }
 
         return response;
