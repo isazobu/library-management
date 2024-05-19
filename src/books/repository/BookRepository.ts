@@ -5,6 +5,10 @@ import BadRequestError from '../../errors/BadRequestError'
 import redisClient from "../../config/redis";
 
 class BookRepository implements BookRepositoryInterface {
+  findById(id: number): Promise<Book | null> {
+    return Book.findByPk(id);
+  }
+
   async createBook(bookData: BookCreationAttributes): Promise<Book> {
     console.log('BookRepository.createBook');
     console.log('bookData:', bookData);
@@ -43,7 +47,7 @@ class BookRepository implements BookRepositoryInterface {
    */
   
 
-  async saveBook(book: Book): Promise<Book> {
+  async save(book: Book): Promise<Book> {
     return book.save();
   }
 
