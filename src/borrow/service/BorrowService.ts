@@ -2,8 +2,8 @@ import BorrowServiceInterface from "./BorrowServiceInterface";
 import BorrowRepositoryInterface from "../repository/BorrowRepositoryInterface";
 import Borrow from "../model/Borrow";
 import BookServiceInterface from "../../books/services/BookServiceInterface";
-import sequelize, { Sequelize, Op } from "sequelize";
 import redisClient from "../../config/redis";
+import {sequelize} from "../../db";
 import _ from "lodash";
 import CustomError from "../../errors/CustomError";
 
@@ -18,13 +18,24 @@ class BorrowService implements BorrowServiceInterface {
     }
 
     async borrowBook(userId: number, bookId: number): Promise<void> {
+        try {
+
+        const transaction = await sequelize.transaction();
+        try {
+            await this.bookService.borrowBook(bookId);
+            await this.borrowRepository.borrowBook(userId, bookId);
+            
+           transaction.commit();
+            
+        } catch (error) {
+            transaction.rollback();
+            throw error;
+        }
+    } catch (error) {
+        console.log('error:', error);
+        throw new CustomError('Borrow failed', 400);
         
-        await this.bookService.borrowBook(bookId);
-        await this.borrowRepository.borrowBook(userId, bookId);
-        
-       
-       
-        
+    }
 
         return;
     }
