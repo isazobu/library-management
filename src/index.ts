@@ -17,6 +17,12 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(cors());
 
+
+app.get('/health', (req, res) => {
+    res.status(200).send('OK');
+});
+
+
 app.use(bodyParser.json());
 app.use('/books', rootRoutes.bookRouter);
 app.use('/users', rootRoutes.userRouter);
