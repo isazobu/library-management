@@ -6,10 +6,11 @@ class BorrowRepository implements BorrowRepositoryInterface {
     async borrowBook(userId: number, bookId: number): Promise<Borrow | null> {
         const borrow =
          await Borrow.create({
-             UserId: userId, 
-             BookId: bookId,
+             userId: userId, 
+             bookId: bookId,
              borrowDate: new Date(),
              });
+        
         return borrow;
         
     }

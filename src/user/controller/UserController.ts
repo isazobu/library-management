@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import User, { UserCreationAttributes } from "../models/User";
 import UserServiceInterface from "../services/UserServiceInsterface";
+import CustomError from "../../errors/CustomError";
 
 class UserController {
     private userService: UserServiceInterface;
@@ -35,6 +36,10 @@ class UserController {
             const user = await this.userService.getUserById(parseInt(req.params.id));
             res.json(user);
         } catch (error) {
+            if(error instanceof CustomError) {
+                res.status(error.statusCode).json({ error: error.message });
+                return;
+            }
             console.error('Error in UserController.getUserById:', error);
             res.status(500).json({ error: 'Failed to fetch user' });
         }

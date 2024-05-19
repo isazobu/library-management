@@ -1,12 +1,13 @@
 import BorrowServiceInterface from "./BorrowServiceInterface";
 import BorrowRepositoryInterface from "../repository/BorrowRepositoryInterface";
-import Borrow from "../model/Borrow";
+import Borrow, { BorrowAttributes } from "../model/Borrow";
 import BookServiceInterface from "../../books/services/BookServiceInterface";
 import redisClient from "../../config/redis";
 import {sequelize} from "../../db";
 import _ from "lodash";
 import CustomError from "../../errors/CustomError";
 import NotFoundError from "../../errors/NotFoundError";
+import { WhereOptions } from "sequelize";
 
 class BorrowService implements BorrowServiceInterface {
     private borrowRepository: BorrowRepositoryInterface;
@@ -23,9 +24,11 @@ class BorrowService implements BorrowServiceInterface {
 
     const transaction = await sequelize.transaction();
         try {
+            
             await this.bookService.borrowBook(bookId);
             await this.borrowRepository.borrowBook(userId, bookId);
-            
+            await redisClient.del(`user-api::user_detail:${userId}`);
+
            transaction.commit();
             
         } catch (error) {
@@ -50,17 +53,22 @@ class BorrowService implements BorrowServiceInterface {
         let totalScore = 0;
         let count = 0;
       
+        const whereCondition: WhereOptions<BorrowAttributes> = {
+          userId: userId,
+          bookId: bookId,
+          returnDate: null,
+        };
+
         const transaction = await sequelize.transaction();
       
         try {
           const borrow = await Borrow.findOne({
-            where: {
-              UserId: userId,
-              BookId: bookId,
-              returnDate: null,
-            },
+            where: whereCondition,
             transaction,
           });
+          
+        
+          
       
           if (!borrow) {
             console.log('Borrow not found');
@@ -72,11 +80,12 @@ class BorrowService implements BorrowServiceInterface {
           await borrow.save({ transaction });
       
           
-      
+          
           const redisResult = await redisClient
             .multi()
-            .hIncrBy(`book:${bookId}`, 'score', score)
-            .hIncrBy(`book:${bookId}`, 'borrowCount', 1)
+            .hIncrBy(`book-api::book:${bookId}`, 'score', score)
+            .hIncrBy(`book-ap::book:${bookId}`, 'borrowCount', 1)
+            .del(`user-api::user_detail:${userId}`)
             .exec();
       
           if (redisResult) {
@@ -85,7 +94,7 @@ class BorrowService implements BorrowServiceInterface {
           }
 
           if (totalScore !== null && count !== null && count !== 0) {
-            const avgScore = totalScore / count;
+            const avgScore: number = Number((totalScore / count).toFixed(2));
             await this.bookService.returnBook(bookId, avgScore, transaction);
           }
       

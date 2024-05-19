@@ -25,7 +25,7 @@ class BookRepository implements BookRepositoryInterface {
 
   async getBookById(id: number): Promise<Book | null> {
     
-    const book = await redisClient.get(`book_detail:${id}`);
+    const book = await redisClient.get(`book-api::book_detail:${id}`);
     if (book) {
       return JSON.parse(book);
     }
@@ -38,7 +38,7 @@ class BookRepository implements BookRepositoryInterface {
     }
     
     if (bookFromDb) {
-      redisClient.set(`book_detail:${id}`, JSON.stringify(bookFromDb));
+      redisClient.set(`book-api::book_detail:${id}`, JSON.stringify(bookFromDb));
     }
 
     return bookFromDb;
@@ -79,7 +79,7 @@ class BookRepository implements BookRepositoryInterface {
       await book.save({ transaction });
 
       
-      await redisClient.set(`book_detail:${id}`, JSON.stringify({
+      await redisClient.set(`book-api::book_detail:${id}`, JSON.stringify({
         id: book.id,
         name: book.name,
         score: book.score,

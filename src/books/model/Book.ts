@@ -2,12 +2,14 @@ import { Optional, Model, InferAttributes, InferCreationAttributes, DataTypes, C
 
 
 import { sequelize } from "../../db";
+import Borrow from "../../borrow/model/Borrow";
 
 export interface BookAttributes {
   id: number;
   name: string;
   score: number;
   isBorrowed: boolean;
+  
 
 }
 
@@ -23,6 +25,8 @@ class Book extends Model<BookAttributes, BookCreationAttributes> implements Book
   declare name: string;
   declare score: CreationOptional<number>;
   declare isBorrowed: CreationOptional<boolean>;
+  
+
 
 }
 
