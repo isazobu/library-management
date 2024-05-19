@@ -1,5 +1,5 @@
 
-create table users
+create table IF NOT EXIST users
 (
     id   serial primary key,
     name varchar(30)
@@ -10,7 +10,7 @@ alter table users
 
 
 
-create table books
+create table IF NOT EXIST  books
 (
     name        varchar       not null,
     is_borrowed boolean,
@@ -25,7 +25,7 @@ alter table books
     owner to postgres;
 	
 	
-create table borrows
+create table IF NOT EXIST borrows
 (
     user_id    integer not null
         constraint borrows_user_id_fkey
